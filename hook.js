@@ -135,6 +135,11 @@ const traverseComp = function (node, parentArray) {
 		newComponent.props = node.memoizedProps;
 	}
 
+
+	// if (node.type && node.type.propTypes) {
+		
+	// }
+	
 	parentArray.push(newComponent);
 
 	newComponent.children = [];

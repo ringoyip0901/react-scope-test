@@ -12,7 +12,7 @@ window.addEventListener('message', (event) => {
 
   chrome.runtime.sendMessage(event.data, () => {
     if (typeof event.data === 'object') {
-      alert('[Content Script] received data');
+      // alert('[Content Script] received data');
     }
   });
 });

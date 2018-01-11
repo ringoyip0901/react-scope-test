@@ -1,3 +1,5 @@
+//branch1
+
 // //props
 // devTools.onCommitFiberRoot = (function(original) {
 // 	return function(...args) {
@@ -137,9 +139,9 @@ const traverseComp = function (node, parentArray) {
 
 
 	// if (node.type && node.type.propTypes) {
-		
+
 	// }
-	
+
 	parentArray.push(newComponent);
 
 	newComponent.children = [];

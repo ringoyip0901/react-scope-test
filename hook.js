@@ -54,6 +54,7 @@ async function getStateProps() {
 
 const traverseComp = function (node, cache) {
 
+	//LinkedList Style
 	const component = {
 		name: "", 
 		state: null, 
@@ -67,7 +68,7 @@ const traverseComp = function (node, cache) {
 			component.name = node.type.name;
 		}
 		else {
-			component[name] = node.type;
+			component.name = node.type || "Default";
 		}
 	}
 
@@ -106,5 +107,4 @@ async function checkingReactDOM() {
 	}
 	store.currentState = cache
 	console.log("Store with Hierarchy: ", store)
-	// console.log("Hierarchy: ", cache)
 }

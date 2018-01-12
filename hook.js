@@ -7,7 +7,6 @@ let reactDOM;
 devTools.onCommitFiberRoot = (function (original) {
   return function(...args) {
       reactDOM = args[1];
-		tester();
 		checkingReactDOM();
     return original(...args);
   }
@@ -29,28 +28,6 @@ async function tester () {
     }
   }
 }
-
-//getting State and Props
-async function getStateProps() {
-	let parent = reactDOM.current;
-	console.log(parent)
-	let sheet = {}; 
-	while (parent.child.alternate !== null) {
-		let component = parent.child; 
-		sheet[component.type.name || component.type.displayName|| "Stateless Component"] = {
-			'name': component.type.name || component.type.displayName || "stateless component",
-			'State': component.memoizedState || "No state",
-			'Props': component.memoizedProps || "No Props"
-		}
-		parent = parent.child;
-	}
-	console.log(sheet)
-	return;
-}
-
-
-
-//check if reactDOM is even valid 
 
 const traverseComp = function (node, cache) {
 
@@ -105,6 +82,7 @@ const traverseComp = function (node, cache) {
 	}
 }
 
+//check if reactDOM is even valid 
 async function checkingReactDOM() {
 	let store = {currentState: null};
 	let cache = {};

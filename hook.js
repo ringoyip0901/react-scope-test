@@ -77,7 +77,17 @@ const traverseComp = function (node, cache) {
 	}
 
 	if (node.memoizedProps) {
-		component.props = node.memoizedProps;
+		let props = [];
+		if (typeof node.memoizedProps === "object") {
+			let keys = Object.keys(node.memoizedProps);
+			keys.forEach((key) => {
+				props.push(node.memoizedProps[key])
+			})
+			component.props = props[0] || props; //need to parse the props if it is a function or an array or an object
+		}
+		else {
+			component.props = node.memoizedProps
+		}
 	}
 	
 	if (node._debugID) {

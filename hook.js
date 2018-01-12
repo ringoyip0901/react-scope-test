@@ -103,66 +103,66 @@ async function getStateProps() {
 
 //check if reactDOM is even valid 
 
-const traverseComp = function (node, parentArray) {
+const traverseComp = function (node, cache) {
 
-	const newComponent = {
+	const component = {
 		name: "", 
 		state: null, 
 		props: null, 
-		id: null, 
-		children: [], 
-		isDOM: null,
+		children: {}, 
 	};
 
-	if (node._debugID) {
-		newComponent.id = node._debugID;
-	}
+	// if (node._debugID) {
+	// 	newComponent.id = node._debugID;
+	// }
 
+
+	//consider using switch/case 
 	if (node.type) {
 		if (node.type.name) {
-			newComponent.name = node.type.name;
-			newComponent.isDOM = false;
+			component.name = node.type.name;
 		}
-		else if (node.type) {
-			newComponent[name] = node.type;
-			newComponent.isDOM = true;
+		else {
+			component[name] = node.type;
 		}
 	}
 
 	if (node.memoizedState) {
-		newComponent.state = node.memoizedState;
+		component.state = node.memoizedState;
 	}
 
 	if (node.memoizedProps) {
-		newComponent.props = node.memoizedProps;
+		component.props = node.memoizedProps;
+	}
+	
+	if (node._debugID) {
+		cache[node._debugID] = component
+	}
+	else if (!node._debugID) {
+		cache["Default ID"] = component
 	}
 
-
-	// if (node.type && node.type.propTypes) {
-
-	// }
-
-	parentArray.push(newComponent);
-
-	newComponent.children = [];
+	// component.children = {};
 	if (node.child !== null) {
-		traverseComp(node.child, newComponent.children)
+		traverseComp(node.child, component.children)
 	}
 	if (node.sibling !== null) {
-		traverseComp(node.sibling, newComponent.children)
+		traverseComp(node.sibling, component.children)
 	}
 }
 
 async function checkingReactDOM() {
-	let components = [];
+	let store = {currentState: null};
+	let cache = {};
 	if (reactDOM) {
 		console.log(reactDOM.current)
 		// traverseComp(reactDOM.current.stateNode.current, components);
-		traverseComp(reactDOM.current, components); //maybe there is no need to use stateNode.current
-
+		traverseComp(reactDOM.current, cache); //maybe there is no need to use stateNode.current
 	}
 	else {
 		return;
 	}
-	console.log("Hierachy: ", components)
+	store.currentState = cache
+	console.log("Store with Hierarchy: ", store)
+	// console.log("Hierarchy: ", cache)
 }

@@ -1,30 +1,7 @@
 //branch1
-
-// //props
-// devTools.onCommitFiberRoot = (function(original) {
-// 	return function(...args) {
-// 		reactDOM = args[1];
-// 		let running;
-// 		tester()
-// 		return original(...args);
-// 	}
-// })(devTools.onCommitFiberRoot);
-
-// function tester() {
-// 	let running; 
-// 	if (!running) {
-// 		running = true;
-// 		console.log(reactDOM.current)
-// 		// console.log(reactDOM.current.child.child.memoizedProps.children[0].props)
-// 	}
-// }
-
-
-///GET State 
 const reactInstances = window.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderers;
 const reactInstance = reactInstances[Object.keys(reactInstances)[0]];
 const devTools = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
-// alert(JSON.stringify(reactInstance));
 let reactDOM;
 
 devTools.onCommitFiberRoot = (function (original) {
@@ -52,34 +29,6 @@ async function tester () {
     }
   }
 }
-
-// ORIGINAL
-// async function getStateProps() {
-// 	let running; 
-// 	if (!running) {
-// 		running = true;
-// 		console.log(reactDOM.current)
-// 		//name of the top 
-// 		let component = reactDOM.current.child
-// 		console.log(component.type.name) //Container 
-// 		//get State 
-// 		let state = reactDOM.current.child.memoizedState;
-// 		console.log("State: ", state);
-
-// 		//check if the compnent has a child, and find the name 
-// 		//get props 
-// 		console.log("Child");
-// 		if (component.child.type) {
-// 			let childComponent = component.child;
-// 			let componentProps = childComponent.memoizedProps.children;
-// 			for (let i = 0; i < componentProps.length; i++) {
-// 				console.log("Props: ", componentProps[i].props)
-// 			}
-// 		}
-// 		// console.log(reactDOM.current.child.child.type.name)
-// 		// console.log(reactDOM.current.child.child.memoizedProps.children[0].props)
-// 	}
-// }
 
 //getting State and Props
 async function getStateProps() {
@@ -112,11 +61,6 @@ const traverseComp = function (node, cache) {
 		children: {}, 
 	};
 
-	// if (node._debugID) {
-	// 	newComponent.id = node._debugID;
-	// }
-
-
 	//consider using switch/case 
 	if (node.type) {
 		if (node.type.name) {
@@ -142,7 +86,6 @@ const traverseComp = function (node, cache) {
 		cache["Default ID"] = component
 	}
 
-	// component.children = {};
 	if (node.child !== null) {
 		traverseComp(node.child, component.children)
 	}
@@ -156,7 +99,6 @@ async function checkingReactDOM() {
 	let cache = {};
 	if (reactDOM) {
 		console.log(reactDOM.current)
-		// traverseComp(reactDOM.current.stateNode.current, components);
 		traverseComp(reactDOM.current, cache); //maybe there is no need to use stateNode.current
 	}
 	else {

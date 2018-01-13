@@ -1,4 +1,4 @@
-//branch1
+//branch1 + kevin's code
 const instances = window.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderers;
 const reactInstance = instances[Object.keys(instances)[0]];
 const devTools = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;

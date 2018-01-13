@@ -8,18 +8,24 @@ function injectScript(file, body) {
 }
 
 window.addEventListener('message', (event) => {
-  if (event.source !== window) return;
-
-  chrome.runtime.sendMessage(event.data, () => {
-    if (typeof event.data === 'object') {
-      // alert('[Content Script] received data');
-    }
-  });
+  if (event.source !== window) 
+  console.log(event)
+  return;
 });
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  // add stuff here
-});
+// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+//   const newEvent = new Event('React-Scope-Test');
+//   window.dispatchEvent(newEvent);
+// });
+
+window.addEventListener("React-Scope-Test", (message) => {
+  chrome.runtime.sendMessage(message.detail)
+}, false)
+
+// chrome.runtime.onMessage.addListener(() => {
+//   var customEvent = new CustomEvent("React-Scope-Test", {data: "hello there!!!"});
+// 	window.dispatchEvent(customEvent)
+// })
 
 injectScript(chrome.runtime.getURL('hook.js'), 'body');
 

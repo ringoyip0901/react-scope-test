@@ -25,11 +25,11 @@ function sendMessage() {
       console.log("data is here")
       storage = msg;
       console.log(storage)
-      let example = storage.data[1].children[3].name;
-      var node = document.createElement('h2');
-      var textnode = document.createTextNode(example);
-      node.appendChild(textnode);
-      document.getElementById('app').appendChild(node);
+      // let example = storage.data[1].children[3].name;
+      // var node = document.createElement('h2');
+      // var textnode = document.createTextNode(example);
+      // node.appendChild(textnode);
+      // document.getElementById('app').appendChild(node);
     }
   })
 };

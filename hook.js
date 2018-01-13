@@ -125,13 +125,14 @@ function traverseComp(node, cache) {
     cache[node._debugID] = component;
   } else if (!node._debugID) {
     cache['Default ID'] = component;
-  }
-
+	}
+	
+	component.children = {};
   if (node.child !== null) {
     traverseComp(node.child, component.children);
   }
   if (node.sibling !== null) {
-    traverseComp(node.sibling, component.children);
+    traverseComp(node.sibling, cache);
   }
 }
 

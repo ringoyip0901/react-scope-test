@@ -1,10 +1,4 @@
 //branch1 + kevin's code
-// const instances = window.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderers;
-// const reactInstance = instances[Object.keys(instances)[0]];
-// const devTools = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
-// let reactDOM;
-
-
 const reactInstances = window.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderers;
 const rid = Object.keys(reactInstances)[0];
 const reactInstance = reactInstances[rid];
@@ -145,7 +139,7 @@ function checkReactDOM(reactDOM) {
     traverseComp(reactDOM.current, cache); //maybe there is no need to use stateNode.current
   } else {
     return;
-  }
+	}
 	data.currentState = cache;
 	var customEvent = new CustomEvent("React-Scope-Test", {detail: { //create a custom event to dispatch for actions for requesting data from background
 		data: stringifyData(saveCache)

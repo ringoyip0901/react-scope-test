@@ -3,27 +3,13 @@ const connections = {};
 chrome.runtime.onConnect.addListener(function(devtoolsConnections) {
   console.log('connected to addlistener devltoolsconnections')
   var devToolsRequest = (message, sender, sendResponse) => {
-    console.log('devtoolsrequest function running')  
-    console.log('message: ', message) 
     chrome.tabs.executeScript(message.tabId, { file: 'content_script.js'});
-    // devToolsConnections.postMessage(message)
-    console.log('devtoolsrequest function finished running')
-
   }
-
   devtoolsConnections.onMessage.addListener(devToolsRequest);
-  // chrome.runtime.onMessage.addListener(devToolsRequest);
-
   devtoolsConnections.onDisconnect.addListener(() => {
     devtoolsConnections.onMessage.removeListener(devToolsRequest);
   });
 });
-
-// chrome.runtime.onConnect.addListener(function(devToolsConnection) {
-//   chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-//       devToolsConnection.postMessage(request)
-//   });
-// })
 
 chrome.runtime.onConnect.addListener(function (port) {
   let extensionListener = (message, sender, response) => {
@@ -36,7 +22,6 @@ chrome.runtime.onConnect.addListener(function (port) {
 
   //listening to messages sent from devtools.js
   port.onMessage.addListener(extensionListener);
-
 
   // to clean up data with disconnect
   port.onDisconnect.addListener(function(port) {
@@ -58,10 +43,10 @@ chrome.runtime.onMessage.addListener(function (req, sender, res) {
     if (tabId in connections) {
       connections[tabId].postMessage(req)
     } else {
-      alert('Tab not found!');
+      console.log('Tab not found!');
     }
   } else {
-    alert('Sender.tab is not defined');
+    console.log('Sender.tab is not defined');
   }
   return true;
 });

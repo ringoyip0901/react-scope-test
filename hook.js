@@ -1,4 +1,4 @@
-//branch1 + kevin's code
+//Promise - refactoring
 const reactInstances = window.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderers;
 const rid = Object.keys(reactInstances)[0];
 const reactInstance = reactInstances[rid];

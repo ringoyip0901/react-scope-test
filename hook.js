@@ -23,7 +23,7 @@ function getInitialStateOnce() {
       initialState = checkReactDOM(initialState.current.stateNode);
       // stringify data
       initialState = stringifyData(initialState);
-      console.log('init', initialState);
+      // console.log('init', initialState);
       run = true;
     }
   };
@@ -55,7 +55,7 @@ const setInitialStateOnce = getInitialStateOnce();
   // add to event loop
   setTimeout(() => {
     saveCache.addToHead(initialState);
-    console.log('initial cache', saveCache);
+    transmitData(saveCache);
   }, 100);
 })();
 
@@ -74,7 +74,8 @@ async function getFiberDOM(instance) {
     currState = await checkReactDOM(fiberDOM);
 
     saveCache.addToHead(currState);
-    console.log('updated cache', saveCache);
+    transmitData(saveCache);
+    // console.log('updated cache', saveCache);
   } catch (e) {
     console.log(e);
   }
@@ -142,12 +143,15 @@ function checkReactDOM(reactDOM) {
     return;
 	}
 	data.currentState = cache;
-	var customEvent = new CustomEvent("React-Scope-Test", {detail: { //create a custom event to dispatch for actions for requesting data from background
-		data: stringifyData(saveCache)
-	}}); 
-	window.dispatchEvent(customEvent)
-  console.log('Store with Hierarchy: ', data);
+  // console.log('Store with Hierarchy: ', data);
   return data;
+}
+
+function transmitData(cache) {
+  var customEvent = new CustomEvent("React-Scope-Test", {detail: { //create a custom event to dispatch for actions for requesting data from background
+    data: stringifyData(cache)
+  }});
+  window.dispatchEvent(customEvent)
 }
 
 //Here we are using a doubly linked list to store state changes

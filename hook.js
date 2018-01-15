@@ -51,6 +51,7 @@ const setInitialStateOnce = getInitialStateOnce();
 // set initial state
 (function setInitialState() {
   setInitialStateOnce();
+  // add to event loop
   setTimeout(() => {
     saveCache.addToHead(initialState);
     console.log('initial cache', saveCache);

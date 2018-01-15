@@ -1,3 +1,4 @@
+//branch1 + kevin's code
 const reactInstances = window.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderers;
 const rid = Object.keys(reactInstances)[0];
 const reactInstance = reactInstances[rid];
@@ -119,13 +120,14 @@ function traverseComp(node, cache) {
     cache[node._debugID] = component;
   } else if (!node._debugID) {
     cache['Default ID'] = component;
-  }
-
+	}
+	
+	component.children = {};
   if (node.child !== null) {
     traverseComp(node.child, component.children);
   }
   if (node.sibling !== null) {
-    traverseComp(node.sibling, component.children);
+    traverseComp(node.sibling, cache);
   }
 }
 
@@ -138,9 +140,13 @@ function checkReactDOM(reactDOM) {
     traverseComp(reactDOM.current, cache); //maybe there is no need to use stateNode.current
   } else {
     return;
-  }
-  data.currentState = cache;
-  // console.log('Store with Hierarchy: ', data);
+	}
+	data.currentState = cache;
+	var customEvent = new CustomEvent("React-Scope-Test", {detail: { //create a custom event to dispatch for actions for requesting data from background
+		data: stringifyData(saveCache)
+	}}); 
+	window.dispatchEvent(customEvent)
+  console.log('Store with Hierarchy: ', data);
   return data;
 }
 

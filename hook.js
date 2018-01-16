@@ -1,4 +1,4 @@
-//Promise - refactoring
+//adding version 15 
 const reactInstances = window.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderers;
 const rid = Object.keys(reactInstances)[0];
 const reactInstance = reactInstances[rid];
@@ -11,6 +11,7 @@ const saveCache = new StateCache();
 
 // get initial state and only run once
 function getInitialStateOnce() {
+  console.log("getInitialStateOnce is running")
   let run = false;
   return function getInitialState() {
     if (!run) {
@@ -23,7 +24,6 @@ function getInitialStateOnce() {
       initialState = checkReactDOM(initialState.current.stateNode);
       // stringify data
       initialState = stringifyData(initialState);
-      // console.log('init', initialState);
       run = true;
     }
   };
@@ -51,6 +51,7 @@ const setInitialStateOnce = getInitialStateOnce();
 
 // set initial state
 (function setInitialState() {
+  console.log("setInitiatl State is running ")
   setInitialStateOnce();
   // add to event loop
   setTimeout(() => {
@@ -69,13 +70,14 @@ devTools.onCommitFiberRoot = (function(original) {
 
 //async version -- should we check for older browsers?!?!?! or use promises?!
 async function getFiberDOM(instance) {
+  console.log("getFiberDOM is running")
   try {
     fiberDOM = await instance;
     currState = await checkReactDOM(fiberDOM);
 
     saveCache.addToHead(currState);
     transmitData(saveCache);
-    // console.log('updated cache', saveCache);
+    console.log('updated cache', saveCache);
   } catch (e) {
     console.log(e);
   }
@@ -134,6 +136,7 @@ function traverseComp(node, cache) {
 
 //check if reactDOM is even valid
 function checkReactDOM(reactDOM) {
+  console.log("checkReactDOM is running")
   let data = { currentState: null };
   let cache = {};
   if (reactDOM) {

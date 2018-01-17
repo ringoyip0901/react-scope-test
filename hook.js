@@ -97,8 +97,7 @@ const setInitialStateOnce = getInitialStateOnce();
   else if (reactInstance && reactInstance.Mount) {
     //get intiial state for 15
     console.log('getting intial state for 15')
-    let intiialState = getFiberDOM15();
-    // transmitData(initialState)
+    getFiberDOM15();
   } 
   else {
     console.log("React Dev Tools is not found")
@@ -127,6 +126,7 @@ async function getFiberDOM15() {
     currState = await parseData();
     console.log("Current State: ", currState);
     transmitData(currState);
+    console.log('sending intial state the first time')
   } catch (e) {
     console.log(e);
   }

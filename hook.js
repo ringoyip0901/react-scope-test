@@ -1,4 +1,4 @@
-//adding version 15 
+//addded code for version 16 or lower
 const reactInstances = window.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderers;
 const rid = Object.keys(reactInstances)[0];
 const reactInstance = reactInstances[rid];
@@ -85,9 +85,9 @@ function stringifyData(obj) {
 const setInitialStateOnce = getInitialStateOnce();
 (function setInitialState() {
   if (reactInstance && reactInstance.version) {
+    //get initial state for 16 or higher 
     console.log("setInitial State is running ")
     setInitialStateOnce();
-    // add to event loop
     setTimeout(() => {
       saveCache.addToHead(initialState);
       console.log('initial cache: ', saveCache)
@@ -112,9 +112,8 @@ async function getFiberDOM16(instance) {
     fiberDOM = await instance;
     currState = await checkReactDOM(fiberDOM);
     console.log(currState)
-    saveCache.addToHead(currState);
+    // saveCache.addToHead(currState); move this step to devtools.js instead 
     transmitData(currState); 
-    console.log('updated cache', saveCache); 
   } catch (e) {
     console.log(e);
   }
@@ -126,7 +125,7 @@ async function getFiberDOM15() {
     currState = await parseData();
     console.log("Current State: ", currState);
     transmitData(currState);
-    console.log('sending intial state the first time')
+    console.log('sent intial state the first time')
   } catch (e) {
     console.log(e);
   }

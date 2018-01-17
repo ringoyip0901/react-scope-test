@@ -9,6 +9,8 @@ let currState;
 let initialState;
 const saveCache = new StateCache();
 
+let runFifteen = false;
+
 // get initial state and only run once
 function getInitialStateOnce() {
   console.log("getInitialStateOnce is running")
@@ -47,41 +49,174 @@ function stringifyData(obj) {
   return data;
 }
 
-const setInitialStateOnce = getInitialStateOnce();
 
-// set initial state
-(function setInitialState() {
-  console.log("setInitiatl State is running ")
-  setInitialStateOnce();
-  // add to event loop
-  setTimeout(() => {
-    saveCache.addToHead(initialState);
-    transmitData(saveCache);
-  }, 100);
+// Monkey patch to listen for state changes 
+//has to be in IFFY?
+(function connectReactDevTool() {
+  console.log('entering connectReactDevTool')
+  //for react16 or 16+
+  if (reactInstance.version) {
+    devTools.onCommitFiberRoot = (function(original) {
+      return function(...args) {
+        getFiberDOM16(args[1]);
+        return original(...args);
+      };
+    })(devTools.onCommitFiberRoot);
+  }
+
+  //for react 16 or lower 
+  else if (reactInstance.Mount) {
+    reactInstance.Reconciler.receiveComponent = (function(original) {
+      return function(...args) {
+        if (!runFifteen) {
+          runFifteen = true;
+          setTimeout(() => {
+            getFiberDOM15(); //here you are getting the data from the DOM 
+            runFifteen = false;
+          }, 10);
+        }
+        return original(...args);
+      };
+    })(reactInstance.Reconciler.receiveComponent)
+  }
 })();
 
-// Monkey patch to listen for state changes
-devTools.onCommitFiberRoot = (function(original) {
-  return function(...args) {
-    getFiberDOM(args[1]);
-    return original(...args);
-  };
-})(devTools.onCommitFiberRoot);
+// set initial state
+const setInitialStateOnce = getInitialStateOnce();
+(function setInitialState() {
+  if (reactInstance && reactInstance.version) {
+    console.log("setInitial State is running ")
+    setInitialStateOnce();
+    // add to event loop
+    setTimeout(() => {
+      saveCache.addToHead(initialState);
+      console.log('initial cache: ', saveCache)
+      transmitData(initialState);
+    }, 100);
+  }
+  else if (reactInstance && reactInstance.Mount) {
+    //get intiial state for 15
+    console.log('getting intial state for 15')
+    let intiialState = getFiberDOM15();
+    // transmitData(initialState)
+  } 
+  else {
+    console.log("React Dev Tools is not found")
+    return;
+  }
+})();
 
 //async version -- should we check for older browsers?!?!?! or use promises?!
-async function getFiberDOM(instance) {
-  console.log("getFiberDOM is running")
+async function getFiberDOM16(instance) {
+  console.log("getFiberDOM16 is running")
   try {
     fiberDOM = await instance;
     currState = await checkReactDOM(fiberDOM);
-
+    console.log(currState)
     saveCache.addToHead(currState);
-    transmitData(saveCache);
-    console.log('updated cache', saveCache);
+    transmitData(currState); 
+    console.log('updated cache', saveCache); 
   } catch (e) {
     console.log(e);
   }
 }
+
+async function getFiberDOM15() {
+  console.log("getFiberDOM15 is running")
+  try {
+    currState = await parseData();
+    console.log("Current State: ", currState);
+    transmitData(currState);
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+
+//parse data from React 15 
+async function parseData(components = {}) {
+  const root = reactInstance.Mount._instancesByReactRootID[1]._renderedComponent;
+  traverseFifteen(root, components);
+  // console.log(components)
+  let data = {currentState: components};
+  return data;
+}
+
+//traverse React 15 
+function traverseFifteen(node, cache){
+  let targetNode = node._currentElement;
+  if (!targetNode) {
+    return;
+  }
+  const component = {
+    name: "",
+    state: null, 
+    props: null, 
+    children: {},
+  };
+
+  if (targetNode.type) {
+    if (targetNode.type.name) {
+      component.name = targetNode.type.name;
+    }
+    else if (targetNode.type.displayName) {
+      component.name = targetNode.type.displayName;
+    }
+    else {
+      component.name = targetNode.type;
+    }
+  }
+
+  //State 
+  if (node._instance && node._instance.state) {
+    component.state = node._instance.state;
+    if (component.state === {}) {
+      component.state = null;
+    }
+  }
+
+  //props
+  if (targetNode && targetNode.props) {
+    let props = []; 
+    if (typeof targetNode.props === 'object') {
+      let keys = Object.keys(targetNode.props);
+      keys.forEach((key) => {
+        props.push(targetNode.props)
+      });
+      component.props = props;
+    }
+    else {
+      component.props = targetNode.props;
+    }
+  }
+
+  //store the objects to cache 
+
+  if (node._debugID) {
+    cache[node._debugID] = component;
+  }
+  if (node._domID && !cache[node._debugID]) {
+    cache[node._domID] = component;
+  }
+  else if (!cache[node._debugID] && !cache[node._domID]){
+    let mountOrder = node._mountOrder/10
+    cache[mountOrder] = component
+  }
+
+  //entering the children components recursively 
+  let children = node._renderedChildren
+  component.children = {};
+  if (children) {
+    let keys = Object.keys(children);
+    keys.forEach((key) => {
+      traverseFifteen(children[key], component.children);
+    })
+  }
+  else if (node._renderedComponent) {
+    traverseFifteen(node._renderedComponent, component.children);
+  }
+};
+
 
 // traverse React 16 fiber DOM
 function traverseComp(node, cache) {
@@ -134,7 +269,7 @@ function traverseComp(node, cache) {
   }
 }
 
-//check if reactDOM is even valid
+//check if reactDOM is even valid and this is for React 16 or above
 function checkReactDOM(reactDOM) {
   console.log("checkReactDOM is running")
   let data = { currentState: null };
